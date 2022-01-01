@@ -124,5 +124,4 @@ config.js
 # VS Code
 .vscode
 
-.ipynb
-.csv
+
