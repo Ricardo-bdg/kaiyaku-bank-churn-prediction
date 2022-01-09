@@ -1,6 +1,6 @@
 import numpy as np
 from flask import Flask, request, jsonify, render_template
-
+import statistics
 import joblib
 
 app = Flask(__name__, static_folder="templates/assets")
@@ -21,15 +21,13 @@ loaded_models = {
 
 # Function to decode predictions 
 def decode(pred):
-    if pred == 1: return 'The Customer will Exits'
-    else: return 'The Customer will Stays'
+    if pred == 1: return 'We can conclude that The Customer will Exits'
+    else: return 'We can conclude that The Customer will Stays'
 
 @app.route('/')
 def home():
     # Initial rendering
-    result = [{'model': 'K-nearest Neighbors', 'prediction': ' '},
-              {'model': 'Logistic Regression', 'prediction': ' '},
-              {'model': 'Random Forest', 'prediction': ' '}]
+    result = [{'prediction': ' '}]
     
     # Create main dictionary
     maind = {}
@@ -77,17 +75,13 @@ def predict():
     for m in loaded_models.values():
         predl.append(decode(m.predict(new_array)[0]))
 
-    result = [
-            {'model': 'K-nearest Neighbors', 'prediction': predl[0]},
-            {'model': 'Logistic Regression', 'prediction': predl[1]},
-            {'model': 'Random Forest', 'prediction': predl[2]},
-            ]
+    result = [{'prediction': statistics.mode(predl)}]
 
     # Create main dictionary
     maind = {}
     maind['customer'] = custd
     maind['predictions'] = result
-
+    
     return render_template('index.html', maind=maind)
 
 @app.route('/')
